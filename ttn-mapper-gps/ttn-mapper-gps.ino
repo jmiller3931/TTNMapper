@@ -40,6 +40,9 @@ void setup() {
   // initialize the scheduler
   os_init();
 
+  // Reset the MAC state. Session and pending data transfers will be discarded.
+  LMIC_reset();
+
   // initialize GPS
   gps_init();
   delay(2000);

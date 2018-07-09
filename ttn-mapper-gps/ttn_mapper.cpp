@@ -28,7 +28,7 @@ const u1_t port = 2;
 extern OLED_Display display;
 
 // Send packet interval (in seconds) -- respect duty cycle!
-const uint8_t send_packet_interval = 60;
+const uint8_t send_packet_interval = 15;
 
 // Waiting on fix interval
 const uint8_t wait_fix_interval = 5;
@@ -77,6 +77,39 @@ void init_lora (osjob_t* j)
   // Allow 1% error margin on clock
   // Note: this might not be necessary, never had clock problem...
   LMIC_setClockError(MAX_CLOCK_ERROR * 1 / 100);
+
+  // Reset the MAC state. Session and pending data transfers will be discarded.
+  LMIC_reset();
+  
+  // relaxed the timing
+  LMIC_setClockError(MAX_CLOCK_ERROR * 1 / 100);
+  
+  LMIC_selectSubBand(1);
+  
+  //Disable FSB1, channels 0-7
+  for (int i = 0; i <= 7; i++) 
+  {
+  LMIC_disableChannel(i); 
+  } 
+  
+  //Disable channels 16-64
+  for (int i = 16; i <= 64; i++) 
+  {
+  LMIC_disableChannel(i);
+  }
+  
+  //Disable channels 66-72
+  for (int i = 66; i <= 72; i++) 
+  {
+  LMIC_disableChannel(i);
+  }
+  
+  LMIC_setAdrMode(0);
+  LMIC.dn2Dr = DR_SF10;
+  
+  // Set data rate and transmit power for uplink (note: txpow seems to be ignored by the library)
+  LMIC_setDrTxpow(DR_SF10,23);
+
   // start joining
   LMIC_startJoining();
 }
