@@ -78,12 +78,7 @@ void init_lora (osjob_t* j)
   // Note: this might not be necessary, never had clock problem...
   LMIC_setClockError(MAX_CLOCK_ERROR * 1 / 100);
 
-  // Reset the MAC state. Session and pending data transfers will be discarded.
-  LMIC_reset();
-  
-  // relaxed the timing
-  LMIC_setClockError(MAX_CLOCK_ERROR * 1 / 100);
-  
+  // TTN uses the second sub-band (1 for SFB2), which are channels 8-15
   LMIC_selectSubBand(1);
   
   //Disable FSB1, channels 0-7
@@ -104,7 +99,9 @@ void init_lora (osjob_t* j)
   LMIC_disableChannel(i);
   }
   
+  // Disable Adaptive Datarate
   LMIC_setAdrMode(0);
+  // Downlink Data Rate in the RX2 window
   LMIC.dn2Dr = DR_SF10;
   
   // Set data rate and transmit power for uplink (note: txpow seems to be ignored by the library)
